@@ -99,7 +99,6 @@ const TimerProvider = ({ children }) => {
     onStartTimer,
   };
 
-  console.log(timerId);
   return (
     <TimerContext.Provider value={timerValue}>{children}</TimerContext.Provider>
   );

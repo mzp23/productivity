@@ -14,12 +14,14 @@ export default function Time() {
       </p>
       {timer.isPaused ? (
         <Play
+          role="button"
           className="absolute inset-y-3/4 h-12 w-auto fill-slate-100 hover:cursor-pointer"
           onClick={onStartTimer}
           alt="Play timer"
         />
       ) : (
         <Pause
+          role="button"
           className="absolute inset-y-3/4 h-12 w-auto fill-slate-100 hover:cursor-pointer rotate-90"
           alt="Pause timer"
           onClick={onPauseTimer}
