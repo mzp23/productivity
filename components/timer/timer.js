@@ -1,17 +1,29 @@
+import React, { useContext } from "react";
+import Head from "next/head";
 
-import React from "react";
 import Button from "../button/button";
 import Time from "./time";
+import { TimerContext } from "../../context/timerContext";
 
-function Timer({ changeTitle }) {
+function Timer() {
+  const { timer } = useContext(TimerContext);
   return (
     <>
-      <Time changeTitle={changeTitle}/>
-      <div className="flex gap-1.5">
-        <Button text="focus time" color="red" />
-        <Button text="short break" color="sky" />
-        <Button text="long break" color="cyan" />
-      </div>
+      <Head>
+        <title>{`${
+          timer.focusStatus
+            ? timer.time + " | " + timer.focusStatus
+            : "Productivity"
+        }`}</title>
+      </Head>
+      <section className="bg-red-500 h-screen flex flex-col items-center justify-center">
+        <Time />
+        <div className="flex gap-1.5">
+          <Button text="focus time" color="red" />
+          <Button text="short break" color="sky" />
+          <Button text="long break" color="cyan" />
+        </div>
+      </section>
     </>
   );
 }
