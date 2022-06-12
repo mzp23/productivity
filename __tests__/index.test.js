@@ -2,11 +2,11 @@ import { render, screen } from '@testing-library/react';
 import Home from '../pages/index';
 
 describe('Home', () => {
-  it('renders a heading', () => {
-    render(<Home />)
+  it('renders a timer', () => {
+    render(<Home /> )
 
-    const heading = screen.getByRole('heading', { level: 1 })
+    const timer = screen.getByRole('timer')
 
-    expect(heading).toBeInTheDocument()
+    expect(timer).toBeInTheDocument()
   })
 })
