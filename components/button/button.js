@@ -1,4 +1,4 @@
-export default function Button({ text, color }) {
+export default function Button({ text, color, onClick }) {
     const btnStyleMap = {
         red: "hover:text-red-200 hover:border-red-600",
         cyan: "hover:text-cyan-200 hover:border-cyan-600",
@@ -15,6 +15,7 @@ export default function Button({ text, color }) {
     <button
       type="button"
       className={`${btnStyleMap[color]} text-white md:px-8 px-4 md:py-3 py-2 font-semibold border rounded`}
+      onClick={onClick}
     >
       {text}
     </button>
