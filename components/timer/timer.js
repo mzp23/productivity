@@ -4,24 +4,42 @@ import Head from "next/head";
 import Button from "../button/button";
 import Time from "./time";
 import { TimerContext } from "../../context/timerContext";
+import {
+  FOCUS_STATUS,
+  LONG_BREAK_STATUS,
+  SHORT_BREAK_STATUS,
+  TITLE,
+} from "../../common/constants";
 
 function Timer() {
-  const { timer } = useContext(TimerContext);
+  const { timer, switchTimerStatusTo } = useContext(TimerContext);
+  const isTimerStarted = timer.deadline !== null;
+
   return (
     <>
       <Head>
         <title>{`${
-          timer.focusStatus
-            ? timer.time + " | " + timer.focusStatus
-            : "Productivity"
+          isTimerStarted ? timer.time + " | " + timer.focusStatus : TITLE
         }`}</title>
       </Head>
       <section className="bg-red-500 h-screen flex flex-col items-center justify-center">
         <Time />
         <div className="flex gap-1.5">
-          <Button text="focus time" color="red" />
-          <Button text="short break" color="sky" />
-          <Button text="long break" color="cyan" />
+          <Button
+            text={FOCUS_STATUS}
+            color="red"
+            onClick={() => switchTimerStatusTo(FOCUS_STATUS)}
+          />
+          <Button
+            text={SHORT_BREAK_STATUS}
+            color="sky"
+            onClick={() => switchTimerStatusTo(SHORT_BREAK_STATUS)}
+          />
+          <Button
+            text={LONG_BREAK_STATUS}
+            color="cyan"
+            onClick={() => switchTimerStatusTo(LONG_BREAK_STATUS)}
+          />
         </div>
       </section>
     </>
