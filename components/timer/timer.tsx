@@ -10,9 +10,10 @@ import {
   SHORT_BREAK_STATUS,
   TITLE,
 } from "../../common/constants";
+import { TimerContextType } from "../../context/TimerContextTypes";
 
-function Timer() {
-  const { timer, switchTimerStatusTo } = useContext(TimerContext);
+function Timer(): JSX.Element {
+  const { timer, switchTimerStatusTo }: TimerContextType = useContext(TimerContext);
   const isTimerStarted = timer.deadline !== null;
 
   return (

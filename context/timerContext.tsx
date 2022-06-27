@@ -11,13 +11,34 @@ import {
   DEFAULT_LONG_BREAK_TIME,
   DEFAULT_SHORT_BREAK_TIME,
   FOCUS_STATUS,
+  ITERATION_BEFORE_LONG_BREAK,
   LONG_BREAK_STATUS,
   SHORT_BREAK_STATUS,
 } from "../common/constants";
 
-export const TimerContext = createContext();
+import {
+  TimerConfigType,
+  TimerStateType,
+  FocusStatusType,
+  TimerContextType,
+} from "./TimerContextTypes";
 
-const initialTimerState = {
+const initialContext: TimerContextType = {
+  timer: {
+    time: "25:00",
+    isPaused: true,
+    deadline: null,
+    focusStatus: "focus time",
+    focusIteration: 1,
+  },
+  switchTimerStatusTo: () => {},
+  onPauseTimer: () => {},
+  onStartTimer: () => {},
+};
+
+export const TimerContext = createContext(initialContext);
+
+const initialTimerState: TimerStateType = {
   time: DEFAULT_FOCUS_TIME,
   isPaused: true,
   deadline: null,
@@ -25,23 +46,29 @@ const initialTimerState = {
   focusIteration: 1,
 };
 
-const timerConfig = {
+const timerConfig: TimerConfigType = {
   focustTime: DEFAULT_FOCUS_TIME,
   shortBreakTime: DEFAULT_SHORT_BREAK_TIME,
   longBreakTime: DEFAULT_LONG_BREAK_TIME,
-  iterationsBeforeLongBreak: 4,
+  iterationsBeforeLongBreak: ITERATION_BEFORE_LONG_BREAK,
   isPausedByDefault: true,
 };
 
-const TimerProvider = ({ children }) => {
+const TimerProvider: React.FC<any> = ({ children }) => {
   const [timer, setTimer] = useReducer(
-    (prevState, payload) => ({ ...prevState, ...payload }),
+    (prevState: TimerStateType, payload: Partial<TimerStateType>) => ({
+      ...prevState,
+      ...payload,
+    }),
     initialTimerState
   );
-  const timerId = useRef(null);
+  const timerId = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const getTimeRemaining = (time) => {
-    const total = Date.parse(time) - Date.parse(new Date());
+  const getTimeRemaining = (
+    time: Date
+  ): { total: number; minutes: number; seconds: number } => {
+    const total =
+      Date.parse(time.toString()) - Date.parse(new Date().toString());
     const seconds = Math.floor((total / 1000) % 60);
     const minutes = Math.floor((total / 1000 / 60) % 60);
 
@@ -52,7 +79,7 @@ const TimerProvider = ({ children }) => {
     };
   };
 
-  const getDeadline = useCallback((time) => {
+  const getDeadline = useCallback((time: string): Date => {
     const minutes = +time.substring(0, 2) * 60;
     const sec = +time.substring(3, 5);
     let deadline = new Date();
@@ -62,7 +89,7 @@ const TimerProvider = ({ children }) => {
   }, []);
 
   const switchTimerStatusTo = useCallback(
-    (timerStatus) => {
+    (timerStatus: FocusStatusType): void => {
       const timerTime = {
         [FOCUS_STATUS]: timerConfig.focustTime,
         [SHORT_BREAK_STATUS]: timerConfig.shortBreakTime,
@@ -77,7 +104,6 @@ const TimerProvider = ({ children }) => {
       setTimer({
         time: timerTime[timerStatus],
         focusStatus: timerStatus,
-        isPaused: timerConfig.isPausedByDefault,
         deadline: getDeadline(timerTime[timerStatus]),
         isPaused: timerConfig.isPausedByDefault,
         focusIteration:
@@ -109,7 +135,7 @@ const TimerProvider = ({ children }) => {
     }
   }, [switchTimerStatusTo, timer.focusIteration, timer.focusStatus]);
   const changeTimer = useCallback(
-    (total, minutes, seconds) => {
+    (total: number, minutes: number, seconds: number) => {
       const isTimerKeepGoing = total >= 0;
 
       if (isTimerKeepGoing) {
@@ -125,7 +151,7 @@ const TimerProvider = ({ children }) => {
   );
 
   const startTimer = useCallback(
-    (time) => {
+    (time: Date): void => {
       const id = setInterval(() => {
         let { total, minutes, seconds } = getTimeRemaining(time);
 
@@ -141,7 +167,7 @@ const TimerProvider = ({ children }) => {
       return;
     }
 
-    startTimer(timer.deadline);
+    timer.deadline && startTimer(timer.deadline);
 
     return () => {
       if (timerId.current) {
@@ -150,20 +176,20 @@ const TimerProvider = ({ children }) => {
     };
   }, [timer.deadline, startTimer, timer.isPaused]);
 
-  const onPauseTimer = () => {
+  const onPauseTimer = (): void => {
     setTimer({
       isPaused: true,
     });
   };
 
-  const onStartTimer = () => {
+  const onStartTimer = (): void => {
     setTimer({
       deadline: getDeadline(timer.time),
       isPaused: false,
     });
   };
 
-  const timerValue = {
+  const timerValue: TimerContextType = {
     timer,
     onPauseTimer,
     onStartTimer,
