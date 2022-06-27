@@ -1,11 +1,12 @@
 import { useContext } from "react";
 
+
 import { TimerContext } from "../../context/timerContext";
 import Play from "../../public/images/play.svg";
 import Pause from "../../public/images/pause.svg";
 import { FOCUS_STATUS } from "../../common/constants";
 
-export default function Time() {
+export default function Time(): JSX.Element {
   const { timer, onPauseTimer, onStartTimer } = useContext(TimerContext);
 
   return (
