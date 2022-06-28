@@ -15,6 +15,7 @@ import {
   LONG_BREAK_STATUS,
   SHORT_BREAK_STATUS,
 } from "../common/constants";
+import useAudio from "../hooks/useAudio";
 
 import {
   TimerConfigType,
@@ -54,6 +55,9 @@ const timerConfig: TimerConfigType = {
   isPausedByDefault: true,
 };
 
+const alarmTimerSoundLink = "/sounds/timer-end.mp3";
+const audioLinks = [alarmTimerSoundLink]
+
 const TimerProvider: React.FC<any> = ({ children }) => {
   const [timer, setTimer] = useReducer(
     (prevState: TimerStateType, payload: Partial<TimerStateType>) => ({
@@ -62,6 +66,8 @@ const TimerProvider: React.FC<any> = ({ children }) => {
     }),
     initialTimerState
   );
+  const [alarmTimerSound] = useAudio(audioLinks)
+
   const timerId = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const getTimeRemaining = (
@@ -124,6 +130,7 @@ const TimerProvider: React.FC<any> = ({ children }) => {
       timer.focusIteration % timerConfig.iterationsBeforeLongBreak === 0;
     const isFocusTimeStarts = timer.focusStatus !== FOCUS_STATUS;
 
+    alarmTimerSound?.play();
     if (isShortBreakStarts) {
       switchTimerStatusTo(SHORT_BREAK_STATUS);
     }
@@ -133,7 +140,7 @@ const TimerProvider: React.FC<any> = ({ children }) => {
     if (isFocusTimeStarts) {
       switchTimerStatusTo(FOCUS_STATUS);
     }
-  }, [switchTimerStatusTo, timer.focusIteration, timer.focusStatus]);
+  }, [alarmTimerSound, switchTimerStatusTo, timer.focusIteration, timer.focusStatus]);
   const changeTimer = useCallback(
     (total: number, minutes: number, seconds: number) => {
       const isTimerKeepGoing = total >= 0;
